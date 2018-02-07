@@ -14,15 +14,24 @@ def get_time_client():
     while not rospy.is_shutdown():
         rospy.wait_for_service('get_time')
         try:
+            # Client send request timestamp
+            request_time = rospy.get_time()
             get_time = rospy.ServiceProxy('get_time', GetTime)
-            resp = get_time()
-            diff_time = rospy.get_time() - resp.time
-            rospy.loginfo('Response duration: %f seconds' % diff_time)
-            duration.append(diff_time)
+            # Server send response timestamp
+            server_response_time = get_time().time
+            # Client receive response timestamp
+            client_receive_response_time = rospy.get_time()
+            # Duration of client request to response from server
+            round_trip = client_receive_response_time - request_time
+            # Duration of server response to client
+            one_way = client_receive_response_time - server_response_time
+            rospy.loginfo('Round trip: %f seconds' % round_trip)
+            rospy.loginfo('One way: %f seconds' % one_way)
+            duration.append(round_trip)
 
             if len(duration) == 360:
                 plt.hist(duration)
-                plt.title('Histogram of Duration of Response from Server to Client (N = 360)')
+                plt.title('Histogram of Duration of Client Request to Response (N = 360)')
                 plt.xlabel('Duration (second)')
                 plt.ylabel('Frequency')
                 plt.show()
