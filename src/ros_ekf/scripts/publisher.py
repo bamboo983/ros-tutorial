@@ -6,8 +6,6 @@
 import rospy
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Header
-from geometry_msgs.msg import Quaternion
 from tf.transformations import quaternion_from_euler
 
 import csv
@@ -16,11 +14,11 @@ def publisher():
     odom_pub = rospy.Publisher('odom', Odometry, queue_size=10)
     imu_pub = rospy.Publisher('imu_data', Imu, queue_size=10)
     rospy.init_node('publisher', anonymous=True)
-    rate = rospy.Rate(1) # 200hz
+    rate = rospy.Rate(5)
 
     quaternion = []
     angular_velocity = []
-    with open('./imu_synthetic/gyro.txt', 'rb') as f:
+    with open('/home/bamboo/Dev/catkin_ws/src/ros_ekf/scripts/imu_synthetic/gyro.txt', 'rb') as f:
         gyro_reader = csv.reader(f, delimiter=',')
         for gyro in gyro_reader:
             q = quaternion_from_euler(float(gyro[0]), float(gyro[1]), float(gyro[2]))
@@ -28,13 +26,13 @@ def publisher():
             angular_velocity.append(list((float(gyro[0]), float(gyro[1]), float(gyro[2]))))
 
     linear_acceleration = []
-    with open('./imu_synthetic/accel.txt', 'rb') as f:
+    with open('/home/bamboo/Dev/catkin_ws/src/ros_ekf/scripts/imu_synthetic/accel.txt', 'rb') as f:
         accel_reader = csv.reader(f, delimiter=',')
         for a in accel_reader:
             linear_acceleration.append(list((float(a[0]), float(a[1]), float(a[2]))))
 
     timestamp = []
-    with open('./imu_synthetic/timestamp.txt', 'rb') as f:
+    with open('/home/bamboo/Dev/catkin_ws/src/ros_ekf/scripts/imu_synthetic/timestamp.txt', 'rb') as f:
         timestamp_reader = csv.reader(f, delimiter=',')
         for t in timestamp_reader:
             timestamp.append(list((float(t[0]), float(t[1]))))
@@ -120,8 +118,8 @@ def publisher():
         odom_pub.publish(odom)
         imu_pub.publish(imu)
 
-        print(odom)
-        print(imu)
+        print odom
+        print imu
         
         ii += 1
         if ii == len(timestamp):
