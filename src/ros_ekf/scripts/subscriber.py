@@ -39,6 +39,7 @@ def callback(data):
                         [0, a21, a22]])
 
     euler_update = np.dot(update, euler) * 0.005
+    # euler_update = np.dot(update, euler) * 0.001
 
     euler_x.append(euler_x[-1] + degrees(euler_update[0]))
     euler_y.append(euler_y[-1] + degrees(euler_update[1]))

@@ -17,6 +17,7 @@ def publisher():
     quaternion = []
     angular_velocity = []
     with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_synthetic/gyro.txt', 'rb') as f:
+    # with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_gladiator/gyro.txt', 'rb') as f:
         gyro_reader = csv.reader(f, delimiter=',')
         for gyro in gyro_reader:
             q = quaternion_from_euler(float(gyro[0]), float(gyro[1]), float(gyro[2]))
@@ -26,6 +27,7 @@ def publisher():
     # read linear acceleration data
     linear_acceleration = []
     with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_synthetic/accel.txt', 'rb') as f:
+    # with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_gladiator/accel.txt', 'rb') as f:
         accel_reader = csv.reader(f, delimiter=',')
         for a in accel_reader:
             linear_acceleration.append(list((float(a[0]), float(a[1]), float(a[2]))))
@@ -33,6 +35,7 @@ def publisher():
     # read timestamp data
     timestamp = []
     with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_synthetic/timestamp.txt', 'rb') as f:
+    # with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_gladiator/timestamp.txt', 'rb') as f:
         timestamp_reader = csv.reader(f, delimiter=',')
         for t in timestamp_reader:
             timestamp.append(list((float(t[0]), float(t[1]))))
