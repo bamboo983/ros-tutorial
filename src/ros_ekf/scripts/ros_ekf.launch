@@ -16,5 +16,7 @@
 
   <node pkg="ros_ekf" type="subscriber.py" name="subscriber" />
 
+  <node pkg="rqt_plot" type="rqt_plot" name="plot" />
+
 </launch>
 
