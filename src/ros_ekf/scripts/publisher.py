@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-## Simple talker demo that published std_msgs/Float64 messages
-## to the 'current_time' topic
-
 import rospy
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
@@ -14,25 +11,28 @@ def publisher():
     odom_pub = rospy.Publisher('odom', Odometry, queue_size=10)
     imu_pub = rospy.Publisher('imu_data', Imu, queue_size=10)
     rospy.init_node('publisher', anonymous=True)
-    rate = rospy.Rate(5)
+    rate = rospy.Rate(20)
 
+    # read gyro data and convert to quaternion
     quaternion = []
     angular_velocity = []
-    with open('/home/bamboo/Dev/catkin_ws/src/ros_ekf/scripts/imu_synthetic/gyro.txt', 'rb') as f:
+    with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_synthetic/gyro.txt', 'rb') as f:
         gyro_reader = csv.reader(f, delimiter=',')
         for gyro in gyro_reader:
             q = quaternion_from_euler(float(gyro[0]), float(gyro[1]), float(gyro[2]))
             quaternion.append(list(q))
             angular_velocity.append(list((float(gyro[0]), float(gyro[1]), float(gyro[2]))))
 
+    # read linear acceleration data
     linear_acceleration = []
-    with open('/home/bamboo/Dev/catkin_ws/src/ros_ekf/scripts/imu_synthetic/accel.txt', 'rb') as f:
+    with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_synthetic/accel.txt', 'rb') as f:
         accel_reader = csv.reader(f, delimiter=',')
         for a in accel_reader:
             linear_acceleration.append(list((float(a[0]), float(a[1]), float(a[2]))))
 
+    # read timestamp data
     timestamp = []
-    with open('/home/bamboo/Dev/catkin_ws/src/ros_ekf/scripts/imu_synthetic/timestamp.txt', 'rb') as f:
+    with open('/home/bamboo/catkin_ws/src/ros_ekf/scripts/imu_synthetic/timestamp.txt', 'rb') as f:
         timestamp_reader = csv.reader(f, delimiter=',')
         for t in timestamp_reader:
             timestamp.append(list((float(t[0]), float(t[1]))))
@@ -41,7 +41,9 @@ def publisher():
     ii = 0
     while True:
 
+        # create Odometry
         odom = Odometry()
+
         # std_msgs/Header header
         odom.header.seq = ii
         odom.header.stamp = rospy.Time.from_sec(timestamp[ii][0])
@@ -68,22 +70,24 @@ def publisher():
                                 0, 0, 0, 0, 0, 1e4]
 
         # geometry_msgs/TwistWithCovariance twist
-        odom.twist.twist.linear.x = linear_acceleration[ii][0]
-        odom.twist.twist.linear.y = linear_acceleration[ii][1]
-        odom.twist.twist.linear.z = linear_acceleration[ii][2]
+        # odom.twist.twist.linear.x = linear_acceleration[ii][0]
+        # odom.twist.twist.linear.y = linear_acceleration[ii][1]
+        # odom.twist.twist.linear.z = linear_acceleration[ii][2]
 
-        odom.twist.twist.angular.x = angular_velocity[ii][0]
-        odom.twist.twist.angular.y = angular_velocity[ii][1]
-        odom.twist.twist.angular.z = angular_velocity[ii][2]
+        # odom.twist.twist.angular.x = angular_velocity[ii][0]
+        # odom.twist.twist.angular.y = angular_velocity[ii][1]
+        # odom.twist.twist.angular.z = angular_velocity[ii][2]
 
-        odom.twist.covariance = [1, 0, 0, 0, 0, 0,
-                                0, 1, 0, 0, 0, 0,
-                                0, 0, 1, 0, 0, 0,
-                                0, 0, 0, 1e4, 0, 0,
-                                0, 0, 0, 0, 1e4, 0,
-                                0, 0, 0, 0, 0, 1e4]
+        # odom.twist.covariance = [1, 0, 0, 0, 0, 0,
+                                # 0, 1, 0, 0, 0, 0,
+                                # 0, 0, 1, 0, 0, 0,
+                                # 0, 0, 0, 1e4, 0, 0,
+                                # 0, 0, 0, 0, 1e4, 0,
+                                # 0, 0, 0, 0, 0, 1e4]
 
+        # create Imu
         imu = Imu()
+
         # std_msgs/Header header
         imu.header.seq = ii
         imu.header.stamp = rospy.Time.from_sec(timestamp[ii][0])
